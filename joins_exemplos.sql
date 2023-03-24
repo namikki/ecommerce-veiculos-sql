@@ -14,9 +14,28 @@ ORDER BY pagamentos DESC
 -- automóveis no site. Obs: Utilizar a tabela temp_tables.ibge_genders
 select * from temp_tables.ibge_genders limit 10
 
+SELECT ibge.gender,
+		COUNT(fun.paid_date)
+FROM sales.funnel AS fun
+LEFT JOIN sales.customers AS cus
+	ON fun.customer_id = cus.customer_id
+LEFT JOIN temp_tables.ibge_genders AS ibge
+	ON LOWER(cus.first_name) = ibge.first_name
+GROUP BY ibge.gender
+
 
 -- (Exemplo 3) Identifique de quais regiões são os clientes que mais visitam o site
 -- Obs: Utilizar a tabela temp_tables.regions
 select * from sales.customers limit 10
 select * from temp_tables.regions limit 10
 
+SELECT reg.region,
+		COUNT(fun.visit_page_date) AS "Visitas"
+FROM sales.funnel AS fun
+LEFT JOIN sales.customers AS cus
+	ON fun.customer_id = cus.customer_id
+LEFT JOIN temp_tables.regions AS reg
+	ON LOWER(cus.city) = LOWER(reg.city)
+	AND LOWER(cus.state) = LOWER(reg.state)
+GROUP BY reg.region
+ORDER BY "Visitas" DESC
